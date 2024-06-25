@@ -62,5 +62,4 @@ public class HotelesController {
             return ResponseEntity.noContent().build();
         }
     }
-
 }

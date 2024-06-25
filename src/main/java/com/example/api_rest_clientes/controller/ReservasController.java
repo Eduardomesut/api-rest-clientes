@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,35 @@ public class ReservasController {
             return ResponseEntity.ok(reservas);
         }else {
             return  ResponseEntity.badRequest().build();
+        }
+    }
+    @CrossOrigin("http://127.0.0.1:3000")
+    @PostMapping("/disponibilidad")
+    public ResponseEntity<Boolean> verificarReserva(@RequestBody Reservas reserva) {
+        // Verifica si los datos de la reserva son válidos
+        if (reserva.getIdReserva() == null && reserva.getFechaEntrada().isBefore(reserva.getFechaSalida()) && reserva.getIdHabitacion() != null) {
+
+            Long idHabitacion = reserva.getIdHabitacion();
+            LocalDate fechaEntrada = reserva.getFechaEntrada();
+            LocalDate fechaSalida = reserva.getFechaSalida();
+
+            // Consultar las reservas existentes para esa habitación
+            List<Reservas> reservasExist = reservasRepository.findAll();
+
+            // Verificar si hay alguna superposición de fechas
+            for (Reservas r : reservasExist) {
+                LocalDate rFechaEntrada = r.getFechaEntrada();
+                LocalDate rFechaSalida = r.getFechaSalida();
+
+                if (fechaEntrada.isBefore(rFechaSalida) && rFechaEntrada.isBefore(fechaSalida) && r.getIdHabitacion() == idHabitacion) {
+                    // Hay una superposición de fechas, la habitación no está disponible
+                    return ResponseEntity.ok(false);
+                }
+            }
+            return ResponseEntity.ok(true);
+        } else {
+            // Datos de reserva no válidos
+            return ResponseEntity.badRequest().build();
         }
     }
     @CrossOrigin("http://127.0.0.1:3000")
