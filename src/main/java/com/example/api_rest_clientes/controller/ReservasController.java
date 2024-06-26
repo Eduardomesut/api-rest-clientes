@@ -70,8 +70,8 @@ public class ReservasController {
                 LocalDate rFechaEntrada = r.getFechaEntrada();
                 LocalDate rFechaSalida = r.getFechaSalida();
 
-                if (fechaEntrada.isBefore(rFechaSalida) && rFechaEntrada.isBefore(fechaSalida) && r.getIdHabitacion() == idHabitacion) {
-                    // Hay una superposición de fechas, la habitación no está disponible
+                // Si hay alguna superposición de fechas, la habitación no está disponible
+                if (!(fechaEntrada.isAfter(rFechaSalida) || fechaSalida.isBefore(rFechaEntrada)) && r.getIdHabitacion().equals(idHabitacion)) {
                     return ResponseEntity.ok(false);
                 }
             }
