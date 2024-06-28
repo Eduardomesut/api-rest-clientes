@@ -67,11 +67,17 @@ public class ReservasController {
 
             // Verificar si hay alguna superposición de fechas
             for (Reservas r : reservasExist) {
+                Long idHab;
+                if (r.getIdHabitacion() == null){
+                    idHab = 0L;
+                }else {
+                    idHab = r.getIdHabitacion();
+                }
                 LocalDate rFechaEntrada = r.getFechaEntrada();
                 LocalDate rFechaSalida = r.getFechaSalida();
 
                 // Si hay alguna superposición de fechas, la habitación no está disponible
-                if (!(fechaEntrada.isAfter(rFechaSalida) || fechaSalida.isBefore(rFechaEntrada)) && r.getIdHabitacion().equals(idHabitacion)) {
+                if (!(fechaEntrada.isAfter(rFechaSalida) || fechaSalida.isBefore(rFechaEntrada)) && idHab.equals(idHabitacion)) {
                     return ResponseEntity.ok(false);
                 }
             }
