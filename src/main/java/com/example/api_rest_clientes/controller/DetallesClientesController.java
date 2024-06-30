@@ -1,6 +1,8 @@
 package com.example.api_rest_clientes.controller;
 
+import com.example.api_rest_clientes.pojo.Clientes;
 import com.example.api_rest_clientes.pojo.DetallesClientes;
+import com.example.api_rest_clientes.repositories.ClientesRepository;
 import com.example.api_rest_clientes.repositories.DetallesClientesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,16 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class DetallesClientesController {
     private final DetallesClientesRepository detallesClientesRepository;
+    private final ClientesRepository clientesRepository;
     private final Logger log = LoggerFactory.getLogger(DetallesClientesController.class);
     @Autowired
-    public DetallesClientesController(DetallesClientesRepository detallesClientesRepository) {
+    public DetallesClientesController(DetallesClientesRepository detallesClientesRepository, ClientesRepository clientesRepository) {
         this.detallesClientesRepository = detallesClientesRepository;
+        this.clientesRepository = clientesRepository;
     }
 
     @CrossOrigin("http://127.0.0.1:3000")
@@ -34,11 +39,22 @@ public class DetallesClientesController {
 
     }
     @CrossOrigin("http://127.0.0.1:3000")
-    @PostMapping("/detalles")
-    public ResponseEntity<DetallesClientes> nuevosDetalles(){
-        DetallesClientes nuevo = new DetallesClientes(null, null, 0, 0.0);
-        detallesClientesRepository.save(nuevo);
-        return ResponseEntity.ok(nuevo);
+    @PostMapping("/detalles/{correo}")
+    public ResponseEntity<DetallesClientes> nuevosDetalles(@PathVariable String correo){
+        List<Clientes> al = clientesRepository.findAll();
+        Long id = null;
+        for (Clientes cli:al) {
+            if (cli.getMail().equals(correo)){
+                id = cli.getId();
+            }
+        }
+        if (id == null){
+            return ResponseEntity.badRequest().build();
+        }else {
+            DetallesClientes nuevo = new DetallesClientes(null, id, 0, 0.0);
+            detallesClientesRepository.save(nuevo);
+            return ResponseEntity.ok(nuevo);
+        }
     }
 
     @CrossOrigin("http://127.0.0.1:3000")

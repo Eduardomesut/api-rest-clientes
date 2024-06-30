@@ -1,8 +1,13 @@
 package com.example.api_rest_clientes.controller;
 
 
+import com.example.api_rest_clientes.pojo.DetallesClientes;
+import com.example.api_rest_clientes.pojo.Recompensa;
+import com.example.api_rest_clientes.pojo.Reservas;
 import com.example.api_rest_clientes.repositories.ClientesRepository;
 import com.example.api_rest_clientes.pojo.Clientes;
+import com.example.api_rest_clientes.repositories.DetallesClientesRepository;
+import com.example.api_rest_clientes.repositories.ReservasRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +20,17 @@ import java.util.*;
 @RequestMapping("/api") // Añade un prefijo común para todas las rutas
 public class ClientesController {
     private final ClientesRepository clientesRepository;
+    private final DetallesClientesRepository detallesClientesRepository;
+    private final ReservasRepository reservasRepository;
+
+
     private final Logger log = LoggerFactory.getLogger(ClientesController.class);
 
     @Autowired
-    public ClientesController(ClientesRepository clientesRepository) {
+    public ClientesController(ClientesRepository clientesRepository, DetallesClientesRepository detallesClientesRepository, ReservasRepository reservasRepository) {
         this.clientesRepository = clientesRepository;
+        this.detallesClientesRepository = detallesClientesRepository;
+        this.reservasRepository = reservasRepository;
     }
 
     @CrossOrigin("http://127.0.0.1:3000")
@@ -98,4 +109,27 @@ public class ClientesController {
         }
     }
 
+    //Todas las cosas eliminadas relativas a user
+    @CrossOrigin("http://127.0.0.1:3000")
+    @DeleteMapping("/cliente/{id}")
+    public ResponseEntity<Clientes>deleteById(@PathVariable Long id){
+        if (clientesRepository.existsById(id)){
+            List<Reservas>alRe = reservasRepository.findAll();
+            List<DetallesClientes>alDe = detallesClientesRepository.findAll();
+            for (Reservas re:alRe) {
+                if (re.getIdCliente() == id){
+                    reservasRepository.delete(re);
+                }
+            }
+            for (DetallesClientes de:alDe) {
+                if (de.getIdCliente() == id){
+                    detallesClientesRepository.delete(de);
+                }
+            }
+            clientesRepository.deleteById(id);
+            return ResponseEntity.accepted().build();
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
