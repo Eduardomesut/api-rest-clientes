@@ -1,8 +1,8 @@
 package com.example.api_rest_clientes.controller;
 
 
+import com.example.api_rest_clientes.exception.EmailAlreadyExistsException;
 import com.example.api_rest_clientes.pojo.DetallesClientes;
-import com.example.api_rest_clientes.pojo.Recompensa;
 import com.example.api_rest_clientes.pojo.Reservas;
 import com.example.api_rest_clientes.repositories.ClientesRepository;
 import com.example.api_rest_clientes.pojo.Clientes;
@@ -67,6 +67,8 @@ public class ClientesController {
     public ResponseEntity<Clientes> guardarCliente(@RequestBody Clientes clientes) {
         if (clientes.getId() != null) {
             return ResponseEntity.badRequest().build();
+        } else if (clientesRepository.existsByMail(clientes.getMail())) {
+            throw new EmailAlreadyExistsException("Ya existe el mail!!");
         } else {
             clientesRepository.save(clientes);
             return ResponseEntity.ok(clientes);
@@ -78,7 +80,7 @@ public class ClientesController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody Clientes clientes) {
         List<Clientes> al = clientesRepository.findAll();
         for (Clientes cli : al) {
-            if (cli.getMail().equals(clientes.getMail())) {
+            if (cli.getMail().equals(clientes.getMail()) && cli.getPassword().equals(clientes.getPassword())) {
                 Map<String, Object> response = new HashMap<>();
                 log.warn("Si");
                 response.put("clienteId", cli.getId());  // Asegúrate de que 'getId()' devuelva el ID del cliente

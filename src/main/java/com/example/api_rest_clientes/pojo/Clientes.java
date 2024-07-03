@@ -1,6 +1,7 @@
 package com.example.api_rest_clientes.pojo;
 
 import jakarta.persistence.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
 @Table(name = "clientes")
@@ -9,6 +10,8 @@ public class Clientes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    private String password;
     private String surname;
     private String mail;
     private String phone;
@@ -22,13 +25,15 @@ public class Clientes {
     public Clientes() {
     }
 
-    public Clientes(String mail) {
+    public Clientes(String mail, String password) {
         this.mail = mail;
+        this.password = password;
     }
 
-    public Clientes(Long id, String name, String surname, String mail, String phone, String address, String address2, String state, String country, String zipCode, String areaCode) {
+    public Clientes(Long id, String name, String password, String surname, String mail, String phone, String address, String address2, String state, String country, String zipCode, String areaCode) {
         this.id = id;
         this.name = name;
+        this.password = password;
         this.surname = surname;
         this.mail = mail;
         this.phone = phone;
@@ -40,6 +45,13 @@ public class Clientes {
         this.areaCode = areaCode;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public Long getId() {
         return id;
