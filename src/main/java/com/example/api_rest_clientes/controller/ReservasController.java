@@ -56,7 +56,7 @@ public class ReservasController {
     @PostMapping("/disponibilidad")
     public ResponseEntity<Boolean> verificarReserva(@RequestBody Reservas reserva) {
         // Verifica si los datos de la reserva son válidos
-        if (reserva.getIdReserva() == null && reserva.getFechaEntrada().isBefore(reserva.getFechaSalida()) && reserva.getIdHabitacion() != null) {
+        if ((reserva.getIdReserva() == null && reserva.getFechaEntrada().isBefore(reserva.getFechaSalida()) && reserva.getIdHabitacion() != null) && reserva.getFechaEntrada().isAfter(LocalDate.now())) {
 
             Long idHabitacion = reserva.getIdHabitacion();
             LocalDate fechaEntrada = reserva.getFechaEntrada();
