@@ -111,6 +111,22 @@ public class ClientesController {
         }
     }
 
+    @CrossOrigin("http://127.0.0.1:3000")
+    @PutMapping("/cliente/{id}/{nombre}/{apellido}")
+    public ResponseEntity<Clientes>cambiarNombre(@PathVariable Long id, @PathVariable String nombre, @PathVariable String apellido){
+        Optional<Clientes> cliente = clientesRepository.findById(id);
+        if (cliente.isPresent()) {
+            cliente.get().setName(nombre);
+            cliente.get().setSurname(apellido);
+            clientesRepository.save(cliente.get());
+            return ResponseEntity.ok(cliente.get());
+        } else {
+            log.warn("No client");
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
     //Todas las cosas eliminadas relativas a user
     @CrossOrigin("http://127.0.0.1:3000")
     @DeleteMapping("/cliente/{id}")
