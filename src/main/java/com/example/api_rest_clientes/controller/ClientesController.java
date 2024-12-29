@@ -2,6 +2,7 @@ package com.example.api_rest_clientes.controller;
 
 
 import com.example.api_rest_clientes.exception.EmailAlreadyExistsException;
+import com.example.api_rest_clientes.exception.PhoneAlreadyExistsException;
 import com.example.api_rest_clientes.pojo.DetallesClientes;
 import com.example.api_rest_clientes.pojo.Reservas;
 import com.example.api_rest_clientes.repositories.ClientesRepository;
@@ -69,6 +70,8 @@ public class ClientesController {
             return ResponseEntity.badRequest().build();
         } else if (clientesRepository.existsByMail(clientes.getMail())) {
             throw new EmailAlreadyExistsException("Ya existe el mail!!");
+        } else if (clientesRepository.existsByPhone(clientes.getPhone())) {
+            throw new PhoneAlreadyExistsException("Teléfono ya en uso!!");
         } else {
             clientesRepository.save(clientes);
             return ResponseEntity.ok(clientes);
