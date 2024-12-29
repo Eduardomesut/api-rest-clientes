@@ -1,6 +1,7 @@
 package com.example.api_rest_clientes.controller;
 
 
+import com.example.api_rest_clientes.correo.GestorEmail;
 import com.example.api_rest_clientes.exception.EmailAlreadyExistsException;
 import com.example.api_rest_clientes.exception.PhoneAlreadyExistsException;
 import com.example.api_rest_clientes.pojo.DetallesClientes;
@@ -66,6 +67,7 @@ public class ClientesController {
     @CrossOrigin("http://127.0.0.1:3000")
     @PostMapping("/register")
     public ResponseEntity<Clientes> guardarCliente(@RequestBody Clientes clientes) {
+        GestorEmail gestorEmail = new GestorEmail();
         if (clientes.getId() != null) {
             return ResponseEntity.badRequest().build();
         } else if (clientesRepository.existsByMail(clientes.getMail())) {
@@ -74,6 +76,7 @@ public class ClientesController {
             throw new PhoneAlreadyExistsException("Teléfono ya en uso!!");
         } else {
             clientesRepository.save(clientes);
+            gestorEmail.mandarCorreo(clientes.getMail());
             return ResponseEntity.ok(clientes);
         }
     }
